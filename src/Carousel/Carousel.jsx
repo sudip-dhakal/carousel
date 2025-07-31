@@ -55,18 +55,38 @@ const Carousel = ({ children }) => {
     });
   };
 
+  const handleButtonClick = (newIndex) => {
+    clearInterval(intervalRef.current);
+    const { slides } = getCrousalContent();
+    setCurrentIndex(newIndex);
+    [...slides].forEach((slide, index) => {
+      slide.setAttribute("data-active", index === newIndex);
+    });
+    startSlider();
+  };
+
+  const handleMouseEnter = () => {
+    clearInterval(intervalRef.current);
+  };
+
+  const handleMouseLeave = () => {
+    startSlider();
+  };
+
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 px-6 py-10">
-        <h1 className="text-white font-extrabold text-5xl mb-2 tracking-wide">
-          Slide {currentIndex + 1}
-        </h1>
-        <p className="text-gray-400 mb-8 text-center max-w-md">
-          Use the navigation buttons to browse through the carousel.
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-fit bg-gradient-to-br from-gray-900 via-black to-gray-800 px-6 py-10">
+        <div className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="text-center md:text-left md:w-1/2 mb-6 md:mb-0">
+            <h1 className="text-white font-extrabold text-2xl mb-2 tracking-wide">
+              Slide {currentIndex + 1}
+            </h1>
+            <p className="text-gray-400 text-sm max-w-md mx-auto md:mx-0">
+              Use the navigation buttons to browse through the carousel.
+            </p>
+          </div>
 
-        <div className="flex flex-col items-center">
-          <div className="flex space-x-6 mb-6">
+          <div className="flex space-x-6">
             <button
               className="bg-red-600 hover:bg-red-700 active:scale-95 transition transform w-14 h-14 rounded-full flex justify-center items-center shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               onClick={handlePrevious}
@@ -81,13 +101,28 @@ const Carousel = ({ children }) => {
               <GrNext color="white" size={26} />
             </button>
           </div>
+        </div>
 
-          <div
-            ref={carouselBoxRef}
-            className="relative w-[90vw] max-w-4xl h-[55vh] md:h-[60vh] overflow-hidden rounded-2xl shadow-2xl border border-gray-700 bg-gray-950 p-2"
-          >
-            {children}
-          </div>
+        <div
+          ref={carouselBoxRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="relative w-[90vw] max-w-4xl h-[55vh] md:h-[60vh] overflow-hidden rounded-2xl shadow-2xl border border-gray-700 bg-gray-950 p-2 mb-6"
+        >
+          {children}
+        </div>
+
+        <div className="flex gap-x-5 items-center justify-center">
+          {[...children].map((child, index) => {
+            return (
+              <button
+                className="bg-red-700 cursor-pointer text-white transition hover:bg-blue-700 hover:scale-150 duration-300 w-[2rem] h-[2rem] rounded-full"
+                onClick={() => handleButtonClick(index)}
+              >
+                {index + 1}
+              </button>
+            );
+          })}
         </div>
       </div>
     </>
