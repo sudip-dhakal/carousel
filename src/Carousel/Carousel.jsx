@@ -5,6 +5,7 @@ import { GrNext } from "react-icons/gr";
 const Carousel = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselBoxRef = useRef();
+  const intervalRef = useRef(0);
 
   const getCrousalContent = () => {
     const carouselBox = carouselBoxRef.current;
@@ -13,11 +14,9 @@ const Carousel = ({ children }) => {
     return { slides, count };
   };
 
-  useEffect(() => {
+  const startSlider = () => {
     const { slides, count } = getCrousalContent();
-    slides[0].setAttribute("data-active", "true");
-
-    setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setCurrentIndex((prev) => {
         const newIndex = prev === count - 1 ? 0 : prev + 1;
 
@@ -27,16 +26,24 @@ const Carousel = ({ children }) => {
 
         return newIndex;
       });
-    }, 10000);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    const { slides, count } = getCrousalContent();
+    slides[0].setAttribute("data-active", "true");
+    startSlider();
   }, []);
 
   const handleNext = () => {
+    clearInterval(intervalRef.current);
     const { count, slides } = getCrousalContent();
     const newIndex = currentIndex === count - 1 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
     [...slides].forEach((slide, index) => {
       slide.setAttribute("data-active", index === newIndex);
     });
+    startSlider();
   };
 
   const handlePrevious = () => {
